@@ -60,7 +60,7 @@ static void irda_master_callback_received(const struct usart_module *const modul
 			if ( irda_rx_array[0] == irda_rx_array[1] && irda_rx_array[1] == irda_rx_array[2] && irda_rx_array[2] == irda_rx_array[3] &&
 					 irda_rx_array[3] == irda_rx_array[4] && irda_rx_array[0] == 0xBB )
 			{
-				port_pin_toggle_output_level(LED_ERROR);
+				port_pin_set_output_level(LED_ERROR, pdTRUE);
 				irda_comm_state = IRDA_BEACON_PING;	// Change state to send first response
 				
 				
@@ -86,6 +86,8 @@ static void irda_master_callback_transmitted(const struct usart_module *const mo
 	
 	switch ( irda_comm_state ) {
 		case IRDA_BEACON_PING:	// The ping has just been transmitted
+			
+		
 			// Change the state of the machine
 			irda_comm_state = IRDA_BEACON_BACK_PING;	// We are starting to wait for the Back-Ping
 			

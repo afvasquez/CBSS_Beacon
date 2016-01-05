@@ -114,6 +114,7 @@ void timer_irda_ping_callback(TimerHandle_t pxTimer)
 	
 	switch ( irda_comm_state ) {
 		case IRDA_BEACON_PING:
+			port_pin_set_output_level(LED_ERROR, pdFALSE);
 				// There was no significant response to the ping, 
 					// Reset accordingly
 			usart_disable_transceiver(&irda_master, USART_TRANSCEIVER_RX);
