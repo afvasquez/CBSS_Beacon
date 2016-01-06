@@ -113,6 +113,9 @@ void timer_irda_ping_callback(TimerHandle_t pxTimer)
 	// This is the timeout timer that should perform the following if reached
 	
 	switch ( irda_comm_state ) {
+		case IRDA_BEACON_SECOND_MSG:
+		case IRDA_BEACON_BACK_SEC:
+			irda_comm_state = IRDA_BEACON_PING;		
 		case IRDA_BEACON_PING:
 			port_pin_set_output_level(LED_ERROR, pdFALSE);
 				// There was no significant response to the ping, 

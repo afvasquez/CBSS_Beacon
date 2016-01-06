@@ -61,9 +61,24 @@ static void irda_master_callback_received(const struct usart_module *const modul
 					 irda_rx_array[3] == irda_rx_array[4] && irda_rx_array[0] == 0xBB )
 			{
 				port_pin_set_output_level(LED_ERROR, pdTRUE);
-				irda_comm_state = IRDA_BEACON_PING;	// Change state to send first response
+				irda_comm_state = IRDA_BEACON_SECOND_MSG;	// Change state to send first response
 				
+				xTimerReset(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
 				
+				// ****** As we will be trying to process the transactions as quick as possible, 
+					// We will be modifying the software timers and queuing transactions on the fly.
+				irda_tx_array[0] = 0xCC;
+				irda_tx_array[1] = 0xCC;
+				irda_tx_array[2] = 0xCC;
+				irda_tx_array[3] = 0xCC;
+				irda_tx_array[4] = 0xCC;
+				usart_write_buffer_job(&irda_master, irda_tx_array,5);	// Send three bytes over IR
+				
+				// Reset the Sync Timer
+				//usart_disable_transceiver(&irda_master, USART_TRANSCEIVER_RX);
+				//
+				
+					// This will cause the task to be executed as we leave this area of code
 // 				xYieldRequired = xTaskResumeFromISR( irda_task_handler );
 // 				
 // 				if( xYieldRequired == pdTRUE )
@@ -75,6 +90,7 @@ static void irda_master_callback_received(const struct usart_module *const modul
 // 				}
 			}
 		break;
+		
 		case IRDA_BEACON_FIRST:
 		break;
 	}
@@ -95,6 +111,15 @@ static void irda_master_callback_transmitted(const struct usart_module *const mo
 			xTimerResetFromISR( timer_IrDA_Sync, 0 );
 			
 			usart_read_buffer_job( &irda_master, irda_rx_array, 5);	// Attempt to receive the next 5 bytes
+		break;
+		case IRDA_BEACON_SECOND_MSG:	// The second message has just been sent
+			// We are to set the mode to the next stage and allow the timeout
+			irda_comm_state = IRDA_BEACON_BACK_SEC;	// At this stage, we try to read for 0xDD
+														// and timeout if we dont receive anything
+														
+			// We will leave this area without the job request so that we force a timeout
+				// and we don't break the demo
+					// If we do, then we will look into the slat code for a culprit
 		break;
 	}
 }
