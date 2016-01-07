@@ -64,7 +64,7 @@ int main(void)
 	timer_IrDA_Ping = xTimerCreate("Ping", 3, pdFALSE, 0, timer_irda_ping_callback);
 	timer_IrDA_Sync = xTimerCreate("Sync", 1, pdFALSE, 1, timer_irda_sync_callback );
 	xTimerStart(timer_IrDA_Ping, 0);	// Start timer that keeps track of Linking
-	xTimerStart(timer_IrDA_Sync, 0);	// Start ping timer
+	//xTimerStart(timer_IrDA_Sync, 0);	// Start ping timer
 	
 	// ..and let FreeRTOS run tasks!
 	vTaskStartScheduler();
@@ -100,6 +100,21 @@ void irda_communication_task(void) {
 				usart_disable_transceiver(&irda_master, USART_TRANSCEIVER_RX);
 				usart_write_buffer_job(&irda_master, irda_tx_array,3);	// Send three bytes over IR
 			break;
+			case IRDA_BEACON_STAGE_5:	// Stage 5 message has just been sent
+				// Send out the ping and wait
+				irda_tx_array[0] = 0xCC;
+				irda_tx_array[1] = 0xCC;
+				irda_tx_array[2] = 0xCC;
+				irda_tx_array[3] = 0xCC;
+				irda_tx_array[4] = 0xCC;
+				
+				port_pin_set_output_level(LED_ERROR, pdTRUE);
+				
+				// Reset the Sync Timer
+				xTimerReset(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
+				usart_disable_transceiver(&irda_master, USART_TRANSCEIVER_RX);
+				usart_write_buffer_job(&irda_master, irda_tx_array,5);	// Send three bytes over IR
+			break;
 		}
 		
 		//xTimerStart(timer_IrDA_link, 0);
@@ -113,6 +128,10 @@ void timer_irda_ping_callback(TimerHandle_t pxTimer)
 	// This is the timeout timer that should perform the following if reached
 	
 	switch ( irda_comm_state ) {
+		case IRDA_BEACON_STAGE_5_RX:	// Stage 5 message has just been sent
+		case IRDA_BEACON_BACK_PING:
+			// Change the state of the machine
+			irda_comm_state = IRDA_BEACON_PING;	// We are starting to wait for the Back-Ping
 		case IRDA_BEACON_PING:
 			port_pin_set_output_level(LED_ERROR, pdFALSE);
 				// There was no significant response to the ping, 

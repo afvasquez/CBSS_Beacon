@@ -15,6 +15,9 @@
 #define IRDA_BEACON_PING		(( uint8_t ) 0x01 )		// This is the first state, it pings out
 #define IRDA_BEACON_BACK_PING	(( uint8_t ) 0x02 )		// This is the second stage, it resets the machine
 															// when there is no response
+															
+#define IRDA_BEACON_STAGE_5		(( uint8_t ) 0x03 )
+#define IRDA_BEACON_STAGE_5_RX	(( uint8_t ) 0x04 )
 
 #define IRDA_BEACON_FIRST	(( uint8_t ) 0x05 )		
 #define IRDA_BEACON_END		(( uint8_t ) 0x06 )		
