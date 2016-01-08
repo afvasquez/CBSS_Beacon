@@ -123,6 +123,7 @@ static void irda_master_callback_transmitted(const struct usart_module *const mo
 		break;
 		case IRDA_BEACON_STAGE_9:
 			// Reset the Sync Timer
+			usart_disable_transceiver( &irda_master, USART_TRANSCEIVER_RX );		// Enable the Rx transceiver
 			xTimerResetFromISR( timer_IrDA_Ping, 0 );
 			irda_comm_state = IRDA_BEACON_PING;	// We are starting to wait for the Back-Ping
 		break;

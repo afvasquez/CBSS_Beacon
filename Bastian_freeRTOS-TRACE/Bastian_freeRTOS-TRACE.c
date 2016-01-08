@@ -132,8 +132,9 @@ void irda_communication_task(void) {
 			break;
 		}
 		
-		//xTimerStart(timer_IrDA_link, 0);
+		system_interrupt_enable_global();
 		vTaskSuspend( NULL );
+		system_interrupt_disable_global();
 	}
 }
 
