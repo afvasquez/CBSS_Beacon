@@ -108,8 +108,23 @@ void irda_communication_task(void) {
 				irda_tx_array[3] = 0xCC;
 				irda_tx_array[4] = 0xCC;
 				
-				port_pin_set_output_level(LED_ERROR, pdTRUE);
+				//port_pin_set_output_level(LED_ERROR, pdTRUE);
 				
+				// Reset the Sync Timer
+				xTimerReset(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
+				usart_disable_transceiver(&irda_master, USART_TRANSCEIVER_RX);
+				usart_write_buffer_job(&irda_master, irda_tx_array,5);	// Send three bytes over IR
+			break;
+			case IRDA_BEACON_STAGE_9:	// Stage 5 message has just been sent
+				// Send out the ping and wait
+				irda_tx_array[0] = 0xEE;
+				irda_tx_array[1] = 0xEE;
+				irda_tx_array[2] = 0xEE;
+				irda_tx_array[3] = 0xEE;
+				irda_tx_array[4] = 0xEE;
+			
+				//port_pin_set_output_level(LED_ERROR, pdTRUE);
+			
 				// Reset the Sync Timer
 				xTimerReset(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
 				usart_disable_transceiver(&irda_master, USART_TRANSCEIVER_RX);
@@ -129,6 +144,7 @@ void timer_irda_ping_callback(TimerHandle_t pxTimer)
 	
 	switch ( irda_comm_state ) {
 		case IRDA_BEACON_STAGE_5_RX:	// Stage 5 message has just been sent
+		case IRDA_BEACON_STAGE_9:
 		case IRDA_BEACON_BACK_PING:
 			// Change the state of the machine
 			irda_comm_state = IRDA_BEACON_PING;	// We are starting to wait for the Back-Ping

@@ -76,7 +76,25 @@ static void irda_master_callback_received(const struct usart_module *const modul
 			}
 		break;
 		case IRDA_BEACON_STAGE_5_RX:
-			
+			if ( irda_rx_array[0] == irda_rx_array[1] && irda_rx_array[1] == irda_rx_array[2] && irda_rx_array[2] == irda_rx_array[3] &&
+				irda_rx_array[3] == irda_rx_array[4] && irda_rx_array[0] == 0xDD )
+			{
+					// This LED indicates that the cards have both been synced
+				port_pin_set_output_level(LED_ERROR, pdTRUE);
+				
+				irda_comm_state = IRDA_BEACON_STAGE_9;	// Change state to send first response
+				//xTimerResetFromISR(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
+				
+				xYieldRequired = xTaskResumeFromISR( irda_task_handler );
+				
+				if( xYieldRequired == pdTRUE )
+				{
+					// We should switch context so the ISR returns to a different task.
+					// NOTE:  How this is done depends on the port you are using.  Check
+					// the documentation and examples for your port.
+					portYIELD_FROM_ISR(xYieldRequired);
+				}
+			}
 		break;
 	}
 }
@@ -101,8 +119,12 @@ static void irda_master_callback_transmitted(const struct usart_module *const mo
 			
 			// Reset the Sync Timer
 			xTimerResetFromISR( timer_IrDA_Ping, 0 );
-			
 			usart_read_buffer_job( &irda_master, irda_rx_array, 5);	// Attempt to receive the next 5 bytes
+		break;
+		case IRDA_BEACON_STAGE_9:
+			// Reset the Sync Timer
+			xTimerResetFromISR( timer_IrDA_Ping, 0 );
+			irda_comm_state = IRDA_BEACON_PING;	// We are starting to wait for the Back-Ping
 		break;
 	}
 }
