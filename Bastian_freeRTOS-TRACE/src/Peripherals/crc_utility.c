@@ -21,6 +21,7 @@ BaseType_t crc_check( uint8_t* data, uint8_t size ) {
 	// The size does not include the spot for the CRC byte
 void crc_generate( uint8_t* data, uint8_t size ) {
 	uint8_t i;
+	*( data + size ) = 0;
 	
 		// Add all the contents of the packet
 	for( i=0; i<size; i++) *( data + size ) += *( data + i );
