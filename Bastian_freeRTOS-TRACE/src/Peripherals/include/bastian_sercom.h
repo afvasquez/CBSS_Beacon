@@ -49,5 +49,10 @@ extern uint8_t irda_comm_state;
 extern uint8_t irda_tx_array[6];
 extern uint8_t irda_rx_array[6];
 
+////////////////////////// CRC Utilities /////////////////////////////////
+//	This function checks for the validity of the CRC byte on a receiving 
+//		byte array.
+BaseType_t crc_check( uint8_t* data, uint8_t size);
+void crc_generate( uint8_t* data, uint8_t size );
 
 #endif /* BASTIAN_SERCOM_H_ */

@@ -100,6 +100,7 @@ C_SRCS +=  \
 ../Bastian_freeRTOS-TRACE.c \
 ../src/ASF/sam0/drivers/sercom/sercom.c \
 ../src/Peripherals/bastian_sercom.c \
+../src/Peripherals/crc_utility.c \
 ../src/ASF/sam0/drivers/sercom/sercom_interrupt.c \
 ../src/ASF/sam0/drivers/sercom/usart/usart.c \
 ../src/ASF/sam0/drivers/sercom/usart/usart_interrupt.c \
@@ -138,6 +139,7 @@ OBJS +=  \
 Bastian_freeRTOS-TRACE.o \
 src/ASF/sam0/drivers/sercom/sercom.o \
 src/Peripherals/bastian_sercom.o \
+src/Peripherals/crc_utility.o \
 src/ASF/sam0/drivers/sercom/sercom_interrupt.o \
 src/ASF/sam0/drivers/sercom/usart/usart.o \
 src/ASF/sam0/drivers/sercom/usart/usart_interrupt.o \
@@ -169,6 +171,7 @@ OBJS_AS_ARGS +=  \
 Bastian_freeRTOS-TRACE.o \
 src/ASF/sam0/drivers/sercom/sercom.o \
 src/Peripherals/bastian_sercom.o \
+src/Peripherals/crc_utility.o \
 src/ASF/sam0/drivers/sercom/sercom_interrupt.o \
 src/ASF/sam0/drivers/sercom/usart/usart.o \
 src/ASF/sam0/drivers/sercom/usart/usart_interrupt.o \
@@ -200,6 +203,7 @@ C_DEPS +=  \
 Bastian_freeRTOS-TRACE.d \
 src/ASF/sam0/drivers/sercom/sercom.d \
 src/Peripherals/bastian_sercom.d \
+src/Peripherals/crc_utility.d \
 src/ASF/sam0/drivers/sercom/sercom_interrupt.d \
 src/ASF/sam0/drivers/sercom/usart/usart.d \
 src/ASF/sam0/drivers/sercom/usart/usart_interrupt.d \
@@ -231,6 +235,7 @@ C_DEPS_AS_ARGS +=  \
 Bastian_freeRTOS-TRACE.d \
 src/ASF/sam0/drivers/sercom/sercom.d \
 src/Peripherals/bastian_sercom.d \
+src/Peripherals/crc_utility.d \
 src/ASF/sam0/drivers/sercom/sercom_interrupt.d \
 src/ASF/sam0/drivers/sercom/usart/usart.d \
 src/ASF/sam0/drivers/sercom/usart/usart_interrupt.d \
@@ -274,6 +279,8 @@ LINKER_SCRIPT_DEP+=  \
 
 
 # AVR32/GNU C Compiler
+
+
 
 
 
