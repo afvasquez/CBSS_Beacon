@@ -106,9 +106,8 @@ void irda_communication_task(void) {
 				irda_tx_array[1] = 0xCC;
 				irda_tx_array[2] = 0xCC;
 				irda_tx_array[3] = 0xCC;
-				irda_tx_array[4] = 0xCC;
-				
-				//port_pin_set_output_level(LED_ERROR, pdTRUE);
+				//irda_tx_array[4] = 0xCC;
+				crc_generate(&irda_tx_array, 4);	// Generate the CRC byte for this packet
 				
 				// Reset the Sync Timer
 				xTimerReset(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
@@ -121,8 +120,8 @@ void irda_communication_task(void) {
 				irda_tx_array[1] = 0xEE;
 				irda_tx_array[2] = 0xEE;
 				irda_tx_array[3] = 0xEE;
-				irda_tx_array[4] = 0xEE;
-			
+				//irda_tx_array[4] = 0xEE;
+				crc_generate(&irda_tx_array, 4);	// Generate the CRC byte for this packet
 				//port_pin_set_output_level(LED_ERROR, pdTRUE);
 			
 				// Reset the Sync Timer

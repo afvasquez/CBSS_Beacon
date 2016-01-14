@@ -476,6 +476,9 @@
     <Compile Include="src\Peripherals\bastian_sercom.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\Peripherals\crc_utility.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\Peripherals\include\bastian_sercom.h">
       <SubType>compile</SubType>
     </Compile>

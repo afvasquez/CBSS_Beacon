@@ -57,10 +57,8 @@ static void irda_master_callback_received(const struct usart_module *const modul
 	switch ( irda_comm_state )
 	{
 		case IRDA_BEACON_BACK_PING:
-			if ( irda_rx_array[0] == irda_rx_array[1] && irda_rx_array[1] == irda_rx_array[2] && irda_rx_array[2] == irda_rx_array[3] &&
-					 irda_rx_array[3] == irda_rx_array[4] && irda_rx_array[0] == 0xBB )
+			if ( crc_check(&irda_rx_array, 4) )
 			{
-				
 				irda_comm_state = IRDA_BEACON_STAGE_5;	// Change state to send first response
 				//xTimerResetFromISR(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
 				
@@ -76,8 +74,7 @@ static void irda_master_callback_received(const struct usart_module *const modul
 			}
 		break;
 		case IRDA_BEACON_STAGE_5_RX:
-			if ( irda_rx_array[0] == irda_rx_array[1] && irda_rx_array[1] == irda_rx_array[2] && irda_rx_array[2] == irda_rx_array[3] &&
-				irda_rx_array[3] == irda_rx_array[4] && irda_rx_array[0] == 0xDD )
+			if ( crc_check(&irda_rx_array, 4) )
 			{
 					// This LED indicates that the cards have both been synced
 				port_pin_set_output_level(LED_ERROR, pdTRUE);
