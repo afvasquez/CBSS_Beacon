@@ -25,6 +25,7 @@
 #define IRDA_BEACON_FIRST	(( uint8_t ) 0x05 )		
 #define IRDA_BEACON_END		(( uint8_t ) 0x06 )		
 
+
 ////////////////////  BASTIAN SERCOM  ////////////////////////////////////
 //		Perform complete SERCOM module setup for the application
 //		Takes no arguments
