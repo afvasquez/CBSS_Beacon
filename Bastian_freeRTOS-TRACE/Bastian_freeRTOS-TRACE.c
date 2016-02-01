@@ -41,19 +41,20 @@ int main(void)
 	//////////////////////////////////////////////////////////////////////////
 	// Start the IrDA communication port
 	bastian_IrDA_configuration();
+	control_serial_setup();
 	
 	// Start the trace logger
-	vTraceInitTraceData();
+	//vTraceInitTraceData();
 	
 	// Start the trace
-	uiTraceStart();
+	//uiTraceStart();
 	
 	// Create the task
 	xTaskCreate(irda_communication_task,
 					(const char *)"IrDA",
 					configMINIMAL_STACK_SIZE,
 					NULL,
-					2,
+					3,
 					&irda_task_handler );
 					
 	
@@ -81,6 +82,7 @@ uint8_t irda_comm_state;
 uint8_t irda_tx_array[6] = { 0 };
 uint8_t irda_rx_array[6] = { 0 };
 void irda_communication_task(void) {
+	uint8_t slat_address_holder;
 	
 	// Start this task by pinging out
 	irda_comm_state = IRDA_BEACON_PING;
@@ -102,10 +104,19 @@ void irda_communication_task(void) {
 			break;
 			case IRDA_BEACON_STAGE_5:	// Stage 5 message has just been sent
 				// Send out the ping and wait
-				irda_tx_array[0] = 0xCC;
-				irda_tx_array[1] = 0xCC;
-				irda_tx_array[2] = 0xCC;
-				irda_tx_array[3] = 0xCC;
+				slat_address_holder = irda_rx_array[0];
+				if ( !table_access_busy && job_lookup_table[slat_address_holder][0] > 0 ) {
+					irda_tx_array[0] = job_lookup_table[slat_address_holder][0];
+					irda_tx_array[1] = job_lookup_table[slat_address_holder][1];
+					irda_tx_array[2] = job_lookup_table[slat_address_holder][2];
+					irda_tx_array[3] = job_lookup_table[slat_address_holder][3];
+				} else {
+					irda_tx_array[0] = 0x00;
+					irda_tx_array[1] = 0x00;
+					irda_tx_array[2] = 0x00;
+					irda_tx_array[3] = 0x00;	
+				}
+				
 				//irda_tx_array[4] = 0xCC;
 				crc_generate(&irda_tx_array, 4);	// Generate the CRC byte for this packet
 				
@@ -116,10 +127,20 @@ void irda_communication_task(void) {
 			break;
 			case IRDA_BEACON_STAGE_9:	// Stage 5 message has just been sent
 				// Send out the ping and wait
-				irda_tx_array[0] = 0xEE;
-				irda_tx_array[1] = 0xEE;
-				irda_tx_array[2] = 0xEE;
-				irda_tx_array[3] = 0xEE;
+				if ( !table_access_busy && job_lookup_table[slat_address_holder][0] > 0 ) {
+					irda_tx_array[0] = job_lookup_table[slat_address_holder][4];
+					irda_tx_array[1] = job_lookup_table[slat_address_holder][5];
+					irda_tx_array[2] = job_lookup_table[slat_address_holder][6];
+					irda_tx_array[3] = job_lookup_table[slat_address_holder][7];
+					
+					job_lookup_table[slat_address_holder][0] = 0;
+				} else {
+					irda_tx_array[0] = 0x00;
+					irda_tx_array[1] = 0x00;
+					irda_tx_array[2] = 0x00;
+					irda_tx_array[3] = 0x00;
+				}
+				
 				//irda_tx_array[4] = 0xEE;
 				crc_generate(&irda_tx_array, 4);	// Generate the CRC byte for this packet
 				//port_pin_set_output_level(LED_ERROR, pdTRUE);
