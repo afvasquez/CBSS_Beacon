@@ -62,6 +62,13 @@ static void irda_master_callback_received(const struct usart_module *const modul
 				irda_comm_state = IRDA_BEACON_STAGE_5;	// Change state to send first response
 				//xTimerResetFromISR(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
 				
+				// Note that we must report from this point on
+				will_report_control = true;	// Will report the following
+				slat_number_report = irda_rx_array[0];
+				job_number_report = irda_rx_array[1];
+				job_report = irda_rx_array[2];
+				slat_health_report = irda_rx_array[3];
+								
  				xYieldRequired = xTaskResumeFromISR( irda_task_handler );
  				
  				if( xYieldRequired == pdTRUE )

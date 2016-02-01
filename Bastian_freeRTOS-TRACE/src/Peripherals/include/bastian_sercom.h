@@ -58,6 +58,12 @@ extern uint8_t irda_rx_array[6];
 extern volatile bool table_access_busy;
 extern volatile uint8_t job_lookup_table[ NUMBER_OF_SLATS + 1 ][ 8 ];
 
+extern volatile bool will_report_control;
+extern volatile uint8_t slat_number_report;
+extern volatile uint8_t job_number_report;
+extern volatile uint8_t job_report;
+extern volatile uint8_t slat_health_report;
+
 ////////////////////////// CRC Utilities /////////////////////////////////
 //	This function checks for the validity of the CRC byte on a receiving 
 //		byte array.

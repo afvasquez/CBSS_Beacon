@@ -30,6 +30,11 @@ volatile uint8_t control_tx_buffer[15];
 // Slat Job DATABSE
 volatile bool table_access_busy;
 volatile uint8_t job_lookup_table[ NUMBER_OF_SLATS + 1 ][ 8 ];
+volatile bool will_report_control;
+volatile uint8_t slat_number_report;
+volatile uint8_t job_number_report;
+volatile uint8_t job_report;
+volatile uint8_t slat_health_report;
 
 uint8_t temp_8bit_variable_A;
 uint8_t temp_8bit_variable_B;
@@ -77,15 +82,28 @@ void control_serial_setup( void ) {
 void controls_communcation_tx_task( void ) {
 		// Initialize this task
 	control_tx_status = CONTROL_TX_SENDING_PING;	// The first thing that we do, is send the ping
+	will_report_control = false;
 	
 	for (;;) {	// Loop forever
 		// Send a sample ping :
 		// Change the nature of the data to be sent depending on the type of data that needs to be transmitted
-			// SEND Regular Pings for now
-		control_tx_buffer[0] = 0xDE;
-				
-		xTimerReset(control_tx_timer, 0);
-		usart_write_buffer_job(&control_serial, control_tx_buffer, 1);
+			// Check if we are going to send a report or a regular ping
+		if ( will_report_control ) {
+			control_tx_buffer[0] = slat_number_report;
+			control_tx_buffer[1] = job_number_report;
+			control_tx_buffer[2] = job_report;
+			control_tx_buffer[3] = slat_health_report;	// Status of the motor
+			
+			will_report_control = false;	
+			
+			xTimerReset(control_tx_timer, 0);
+			usart_write_buffer_job(&control_serial, control_tx_buffer, 4);
+		} else {
+			control_tx_buffer[0] = 0xDE;	
+			
+			xTimerReset(control_tx_timer, 0);
+			usart_write_buffer_job(&control_serial, control_tx_buffer, 1);
+		}
 		
 		vTaskSuspend( NULL );	// Suspend myself right now
 	}
