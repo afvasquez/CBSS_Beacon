@@ -89,15 +89,16 @@ void controls_communcation_tx_task( void ) {
 		// Change the nature of the data to be sent depending on the type of data that needs to be transmitted
 			// Check if we are going to send a report or a regular ping
 		if ( will_report_control ) {
-			control_tx_buffer[0] = slat_number_report;
-			control_tx_buffer[1] = job_number_report;
-			control_tx_buffer[2] = job_report;
-			control_tx_buffer[3] = slat_health_report;	// Status of the motor
+			control_tx_buffer[0] = 0xFA;
+			control_tx_buffer[1] = slat_number_report;
+			control_tx_buffer[2] = job_number_report;
+			control_tx_buffer[3] = job_report;
+			control_tx_buffer[4] = slat_health_report;	// Status of the motor
 			
 			will_report_control = false;	
 			
 			xTimerReset(control_tx_timer, 0);
-			usart_write_buffer_job(&control_serial, control_tx_buffer, 4);
+			usart_write_buffer_job(&control_serial, control_tx_buffer, 5);
 		} else {
 			control_tx_buffer[0] = 0xDE;	
 			
