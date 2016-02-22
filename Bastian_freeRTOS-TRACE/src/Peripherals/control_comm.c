@@ -38,8 +38,6 @@ volatile uint8_t slat_health_report;
 
 uint8_t temp_8bit_variable_A;
 uint8_t temp_8bit_variable_B;
-uint16_t temp_16bit_variable;
-uint16_t temp_delay;
 uint16_t temp_ramp;
 uint16_t temp_speed;
 uint16_t temp_duration;
@@ -114,6 +112,9 @@ void controls_communcation_rx_task( void ) {
 	uint8_t i, current_slat;
 	uint8_t subsequent_slats;
 	
+	uint16_t temp_16bit_variable;
+	uint16_t temp_delay;
+	
 	// Initialize this task
 		control_rx_status = CONTROL_RX_GETTING_FB;
 		table_access_busy = false;
@@ -159,14 +160,15 @@ void controls_communcation_rx_task( void ) {
 							temp_16bit_variable = temp_16bit_variable << 8;
 							temp_16bit_variable = temp_16bit_variable | (uint16_t) control_rx_buffer[8];
 							if ( temp_16bit_variable == 0 ) {	// If zero, send minimum
+								job_lookup_table[current_slat][2] = job_lookup_table[current_slat][2] & 0xF0;
 								job_lookup_table[current_slat][3] = 0x01;
 							} else {
 								temp_delay = temp_16bit_variable;
 								temp_16bit_variable = temp_16bit_variable >> 4;
 								temp_16bit_variable = temp_16bit_variable & 0x00FF;
 								job_lookup_table[current_slat][3] = (uint8_t) temp_16bit_variable;
-								temp_delay = temp_16bit_variable;
-								temp_16bit_variable = temp_16bit_variable >> 8;
+								temp_16bit_variable = temp_delay;
+								temp_16bit_variable = temp_16bit_variable >> 12;
 								temp_16bit_variable = temp_16bit_variable & 0x000F;
 								temp_8bit_variable_A = (uint8_t) temp_16bit_variable;
 								job_lookup_table[current_slat][2] = job_lookup_table[current_slat][2] | temp_8bit_variable_A;
@@ -176,14 +178,15 @@ void controls_communcation_rx_task( void ) {
 							temp_16bit_variable = temp_16bit_variable << 8;
 							temp_16bit_variable = temp_16bit_variable | (uint16_t) control_rx_buffer[12];
 							if ( temp_16bit_variable == 0 ) {	// If zero, send minimum
+								job_lookup_table[current_slat][5] = job_lookup_table[current_slat][5] & 0xF0;
 								job_lookup_table[current_slat][6] = 0x01;
 							} else {
 								temp_delay = temp_16bit_variable;
 								temp_16bit_variable = temp_16bit_variable >> 4;
 								temp_16bit_variable = temp_16bit_variable & 0x00FF;
 								job_lookup_table[current_slat][6] = (uint8_t) temp_16bit_variable;
-								temp_delay = temp_16bit_variable;
-								temp_16bit_variable = temp_16bit_variable >> 8;
+								temp_16bit_variable = temp_delay;
+								temp_16bit_variable = temp_16bit_variable >> 12;
 								temp_16bit_variable = temp_16bit_variable & 0x000F;
 								temp_8bit_variable_A = (uint8_t) temp_16bit_variable;
 								job_lookup_table[current_slat][5] = job_lookup_table[current_slat][5] | temp_8bit_variable_A;
