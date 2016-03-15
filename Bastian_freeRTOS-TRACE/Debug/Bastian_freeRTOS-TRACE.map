@@ -5970,7 +5970,7 @@ OUTPUT(Bastian_freeRTOS-TRACE.elf elf32-littlearm)
  .debug_line    0x0000cd20      0x983 src/ASF/sam0/drivers/port/port.o
  .debug_line    0x0000d6a3      0x9a1 src/ASF/sam0/drivers/system/pinmux/pinmux.o
 
-.debug_str      0x00000000    0x86f70
+.debug_str      0x00000000    0x86f8b
  .debug_str     0x00000000    0x7ead1 Bastian_freeRTOS-TRACE.o
                               0x7f041 (size before relaxing)
  .debug_str     0x0007ead1      0x49f src/ASF/sam0/drivers/sercom/sercom.o
@@ -6001,17 +6001,17 @@ OUTPUT(Bastian_freeRTOS-TRACE.elf elf32-littlearm)
                                0x8885 (size before relaxing)
  .debug_str     0x0008341d     0x100d src/ASF/sam0/utils/cmsis/samd21/source/gcc/startup_samd21.o
                               0x662dc (size before relaxing)
- .debug_str     0x0008442a     0x2689 src/ASF/sam0/drivers/system/clock/clock_samd21_r21_da/clock.o
-                              0x7b7e0 (size before relaxing)
- .debug_str     0x00086ab3      0x285 src/ASF/sam0/drivers/system/clock/clock_samd21_r21_da/gclk.o
+ .debug_str     0x0008442a     0x26a4 src/ASF/sam0/drivers/system/clock/clock_samd21_r21_da/clock.o
+                              0x7b7df (size before relaxing)
+ .debug_str     0x00086ace      0x285 src/ASF/sam0/drivers/system/clock/clock_samd21_r21_da/gclk.o
                               0x79316 (size before relaxing)
- .debug_str     0x00086d38       0x47 src/ASF/sam0/drivers/system/system.o
+ .debug_str     0x00086d53       0x47 src/ASF/sam0/drivers/system/system.o
                               0x7871c (size before relaxing)
- .debug_str     0x00086d7f       0x73 src/ASF/common/utils/interrupt/interrupt_sam_nvic.o
+ .debug_str     0x00086d9a       0x73 src/ASF/common/utils/interrupt/interrupt_sam_nvic.o
                               0x78697 (size before relaxing)
- .debug_str     0x00086df2       0x4e src/ASF/sam0/drivers/port/port.o
+ .debug_str     0x00086e0d       0x4e src/ASF/sam0/drivers/port/port.o
                               0x78a4c (size before relaxing)
- .debug_str     0x00086e40      0x130 src/ASF/sam0/drivers/system/pinmux/pinmux.o
+ .debug_str     0x00086e5b      0x130 src/ASF/sam0/drivers/system/pinmux/pinmux.o
                               0x78a8e (size before relaxing)
 
 .debug_frame    0x00000000     0x15d8
