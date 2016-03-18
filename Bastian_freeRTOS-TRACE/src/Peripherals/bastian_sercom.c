@@ -57,17 +57,18 @@ static void irda_master_callback_received(const struct usart_module *const modul
 	switch ( irda_comm_state )
 	{
 		case IRDA_BEACON_BACK_PING:
-			if ( crc_check(&irda_rx_array, 4) )
+			if ( irda_rx_array[0] == irda_rx_array[1] && irda_rx_array[0] == irda_rx_array[2] && irda_rx_array[0] == 0xBB )
 			{
+				port_pin_set_output_level(LED_ERROR, pdTRUE);
+				
 				irda_comm_state = IRDA_BEACON_STAGE_5;	// Change state to send first response
 				//xTimerResetFromISR(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
 				
 				// Note that we must report from this point on
-				will_report_control = true;	// Will report the following
-				slat_number_report = irda_rx_array[0];
-				job_number_report = irda_rx_array[1];
-				job_report = irda_rx_array[2];
-				slat_health_report = irda_rx_array[3];
+				//slat_number_report = irda_rx_array[0];
+				//job_number_report = irda_rx_array[1];
+				//job_report = irda_rx_array[2];
+				//slat_health_report = irda_rx_array[3];
 								
  				xYieldRequired = xTaskResumeFromISR( irda_task_handler );
  				
@@ -78,13 +79,21 @@ static void irda_master_callback_received(const struct usart_module *const modul
  					// the documentation and examples for your port.
  					portYIELD_FROM_ISR(xYieldRequired);
  				}
-			}
+			} else port_pin_set_output_level(LED_ERROR, pdFALSE);
 		break;
 		case IRDA_BEACON_STAGE_5_RX:
 			if ( crc_check(&irda_rx_array, 4) )
 			{
+				will_report_control = true;	// Will report the following
+				
+				// Note that we must report from this point on
+				slat_number_report = irda_rx_array[0];
+				job_number_report = irda_rx_array[1];
+				job_report = irda_rx_array[2];
+				slat_health_report = irda_rx_array[3];
+				
 					// This LED indicates that the cards have both been synced
-				port_pin_set_output_level(LED_ERROR, pdTRUE);
+				//port_pin_set_output_level(LED_ERROR, pdTRUE);
 				
 				irda_comm_state = IRDA_BEACON_STAGE_9;	// Change state to send first response
 				//xTimerResetFromISR(timer_IrDA_Ping, 0);	// Reset the Ping timer immediately
@@ -98,14 +107,13 @@ static void irda_master_callback_received(const struct usart_module *const modul
 					// the documentation and examples for your port.
 					portYIELD_FROM_ISR(xYieldRequired);
 				}
-			}
+			} else port_pin_set_output_level(LED_ERROR, pdFALSE);
 		break;
 	}
 }
 // IrDA Tx Callback Function
 static void irda_master_callback_transmitted(const struct usart_module *const module) {
-	
-	usart_enable_transceiver( &irda_master, USART_TRANSCEIVER_RX );		// Enable the Rx transceiver
+	usart_enable_transceiver(&irda_master, USART_TRANSCEIVER_RX);		// Disable the Rx Transceiver
 	
 	switch ( irda_comm_state ) {
 		case IRDA_BEACON_STAGE_5:	// Stage 5 message has just been sent
@@ -116,16 +124,16 @@ static void irda_master_callback_transmitted(const struct usart_module *const mo
 			usart_read_buffer_job( &irda_master, irda_rx_array, 5);	// Attempt to receive the next 5 bytes
 		break;
 		case IRDA_BEACON_PING:	// The ping has just been transmitted
-			
-		
 			// Change the state of the machine
 			irda_comm_state = IRDA_BEACON_BACK_PING;	// We are starting to wait for the Back-Ping	
 			
 			// Reset the Sync Timer
+			usart_read_buffer_job( &irda_master, irda_rx_array, 4);	// Attempt to receive the next 5 bytes
 			xTimerResetFromISR( timer_IrDA_Ping, 0 );
-			usart_read_buffer_job( &irda_master, irda_rx_array, 5);	// Attempt to receive the next 5 bytes
+			//port_pin_set_output_level(LED_BUSY, pdFALSE);
 		break;
 		case IRDA_BEACON_STAGE_9:
+			port_pin_set_output_level(LED_ERROR, pdFALSE);
 			// Reset the Sync Timer
 			usart_disable_transceiver( &irda_master, USART_TRANSCEIVER_RX );		// Enable the Rx transceiver
 			xTimerResetFromISR( timer_IrDA_Ping, 0 );

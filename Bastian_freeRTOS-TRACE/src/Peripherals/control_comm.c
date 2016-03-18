@@ -109,7 +109,7 @@ void controls_communcation_tx_task( void ) {
 }
 // RX Task Handler
 void controls_communcation_rx_task( void ) {
-	uint8_t i, current_slat;
+	uint8_t i, current_slat, base_slat;
 	uint8_t subsequent_slats;
 	
 	uint16_t temp_16bit_variable;
@@ -127,16 +127,18 @@ void controls_communcation_rx_task( void ) {
 					
 					// First set the flag that indicates database access
 				table_access_busy = true;
+				//port_pin_set_output_level(LED_BUSY, pdTRUE);
+				
 					// Next, check if the number of the indicated slat is correct
 				if ( control_rx_buffer[ 1 ] > 0 && control_rx_buffer[ 1 ] < NUMBER_OF_SLATS + 1 ) {	// 0 < ss < 72 (in this case)
-					current_slat = control_rx_buffer[1];	// Initialize the current slat counter/variable
+					base_slat = control_rx_buffer[1];	// Initialize the current slat counter/variable
 					
 					// Iterate on the number of slats to be affected
 					if ( control_rx_buffer[ 2 ] < 2 ) subsequent_slats = 1;
 					else subsequent_slats = control_rx_buffer[ 2 ];
 					
 					for ( i=0; i < subsequent_slats; i++ ) {
-						current_slat = current_slat + i;	// Fix the slat to be operated on
+						current_slat = base_slat + i;	// Fix the slat to be operated on
 						
 							// Modulate the number of the slat if needed
 						if ( current_slat > NUMBER_OF_SLATS ) current_slat = current_slat % NUMBER_OF_SLATS;
@@ -210,6 +212,7 @@ void controls_communcation_rx_task( void ) {
 			break;
 		}
 		
+		//port_pin_set_output_level(LED_BUSY, pdFALSE);
 		// we have to try to do two things at the same time: 1] Send the ping back every 20ms 2] Receive data from controls ASYNC
 		vTaskSuspend( NULL );	// Suspend myself right now!
 	}

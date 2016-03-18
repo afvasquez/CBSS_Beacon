@@ -13,6 +13,7 @@
 void irda_communication_task(void);
 void timer_irda_ping_callback(TimerHandle_t pxTimer);
 void timer_irda_sync_callback(TimerHandle_t pxTimer);
+void debug_blinker(void);
 
 // Define the handler for the timer
 TimerHandle_t timer_IrDA_Ping;
@@ -57,6 +58,13 @@ int main(void)
 					3,
 					&irda_task_handler );
 					
+	xTaskCreate(debug_blinker,
+					(const char *)"BNK",
+					configMINIMAL_STACK_SIZE,
+					NULL,
+					1,
+					NULL );
+					
 	
 	// Enable global interrupts
 	system_interrupt_enable_global();
@@ -92,6 +100,7 @@ void irda_communication_task(void) {
 		switch( irda_comm_state )
 		{
 			case IRDA_BEACON_PING:
+				//port_pin_set_output_level(LED_BUSY, pdTRUE);
 				// Send out the ping and wait
 				irda_tx_array[0] = 0xAA;
 				irda_tx_array[1] = 0xAA;
@@ -104,7 +113,7 @@ void irda_communication_task(void) {
 			break;
 			case IRDA_BEACON_STAGE_5:	// Stage 5 message has just been sent
 				// Send out the ping and wait
-				slat_address_holder = irda_rx_array[0];
+				slat_address_holder = irda_rx_array[3];
 				if ( !table_access_busy && job_lookup_table[slat_address_holder][0] > 0 ) {
 					irda_tx_array[0] = job_lookup_table[slat_address_holder][0];
 					irda_tx_array[1] = job_lookup_table[slat_address_holder][1];
@@ -170,7 +179,7 @@ void timer_irda_ping_callback(TimerHandle_t pxTimer)
 			// Change the state of the machine
 			irda_comm_state = IRDA_BEACON_PING;	// We are starting to wait for the Back-Ping
 		case IRDA_BEACON_PING:
-			port_pin_set_output_level(LED_ERROR, pdFALSE);
+			//port_pin_set_output_level(LED_ERROR, pdFALSE);
 				// There was no significant response to the ping, 
 					// Reset accordingly
 			usart_disable_transceiver(&irda_master, USART_TRANSCEIVER_RX);
@@ -192,5 +201,12 @@ void timer_irda_sync_callback(TimerHandle_t pxTimer)
 			// There was no Back-Ping detected
 			irda_comm_state = IRDA_BEACON_PING;
 		break;
+	}
+}
+
+void debug_blinker(void) {
+	for (;;) {
+		port_pin_toggle_output_level(LED_BUSY);
+		vTaskDelay(500);
 	}
 }
